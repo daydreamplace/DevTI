@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { axes, isAnswers, questions, STORAGE_KEY } from '@/lib/questions';
 
 const empty = () => Array<number | null>(40).fill(null);
+const axisSteps = ['접근 방식', '해결 방식', '협업 방식', '완성 지향'];
 const labels = [
   '전혀 아니다',
   '아니다',
@@ -86,7 +87,7 @@ export function TestFlow() {
         event.altKey ||
         event.ctrlKey ||
         event.metaKey ||
-        el.tagName === 'INPUT' ||
+        (el.tagName === 'INPUT' && (el as HTMLInputElement).type !== 'radio') ||
         el.tagName === 'TEXTAREA'
       )
         return;
@@ -94,7 +95,7 @@ export function TestFlow() {
         event.preventDefault();
         choose(Number(event.key));
       }
-      if (event.key === 'ArrowLeft' && index > 0) {
+      if (event.key === 'ArrowLeft' && index > 0 && !el.closest('.rating-group')) {
         event.preventDefault();
         setIndex(index - 1);
       }
@@ -147,13 +148,23 @@ export function TestFlow() {
       >
         <span style={{ width: `${(answered / 40) * 100}%` }} />
       </div>
-      <div className="test-axis-nav">
-        {axes.map((axis, i) => (
-          <span key={axis.name} className={i === q.axis ? 'current' : ''}>
-            0{i + 1} {axis.name}
-          </span>
-        ))}
-      </div>
+      <ol className="test-axis-steps" aria-label="네 가지 성향의 응답 진행 단계">
+        {axes.map((axis, i) => {
+          const complete = answers.slice(i * 10, (i + 1) * 10).every((a) => a !== null);
+          return (
+            <li
+              key={axis.name}
+              className={i === q.axis ? 'current' : ''}
+              aria-current={i === q.axis ? 'step' : undefined}
+            >
+              <span className="step-indicator" aria-hidden="true">
+                {complete ? <Check size={11} /> : i + 1}
+              </span>
+              <span>{axisSteps[i]}</span>
+            </li>
+          );
+        })}
+      </ol>
       {resumed && (
         <p className="notice" role="status">
           저장된 답변을 불러왔어요. 이어서 답하거나 이전 문항을 수정할 수 있어요.
@@ -164,56 +175,84 @@ export function TestFlow() {
           이 브라우저에서는 답변을 저장할 수 없어요. 창을 닫지 말고 테스트를 완료해주세요.
         </p>
       )}
-      <section className="question-panel" aria-labelledby="question-title">
-        <span className="question-axis">{axes[q.axis].english}</span>
-        <span className="question-index">QUESTION {String(index + 1).padStart(2, '0')}</span>
-        <h1 id="question-title" ref={heading} tabIndex={-1}>
-          {q.text}
-        </h1>
-        <p className="question-hint">평소의 나와 가장 가까운 답을 골라주세요.</p>
-        <div className="rating-labels" aria-hidden="true">
-          <span>전혀 아니다</span>
-          <span>매우 그렇다</span>
+      <div className="question-card">
+        <section className="question-panel" aria-labelledby="question-title">
+          <div className="question-meta">
+            <span className="question-axis">{axes[q.axis].name}</span>
+            <span className="question-index">
+              {String(index + 1).padStart(2, '0')} <span>/ 40</span>
+            </span>
+          </div>
+          <h1 id="question-title" ref={heading} tabIndex={-1}>
+            {q.text}
+          </h1>
+          <p className="question-hint">평소의 나와 가장 가까운 답을 선택해주세요.</p>
+          <div className="rating-labels" aria-hidden="true">
+            <span>전혀 아니다</span>
+            <span>매우 그렇다</span>
+          </div>
+          <div
+            className="rating-group"
+            role="radiogroup"
+            aria-label="문항 답변, 1점 전혀 아니다부터 7점 매우 그렇다까지"
+          >
+            {labels.map((label, i) => (
+              <label key={label} className={`rating ${answers[index] === i + 1 ? 'selected' : ''}`}>
+                <input
+                  className="sr-only"
+                  type="radio"
+                  name={`question-${q.id}`}
+                  value={i + 1}
+                  checked={answers[index] === i + 1}
+                  aria-label={`${i + 1}점: ${label}`}
+                  onChange={() => choose(i + 1)}
+                />
+                <span aria-hidden="true">{i + 1}</span>
+              </label>
+            ))}
+          </div>
+          <p
+            className={`selection-feedback ${answers[index] !== null ? 'has-selection' : ''}`}
+            role="status"
+          >
+            {answers[index] === null ? (
+              '답변을 선택하면 다음 문항으로 이동할 수 있어요.'
+            ) : (
+              <>
+                <Check size={13} />
+                {answers[index]}점 · {labels[answers[index]! - 1]}
+              </>
+            )}
+          </p>
+        </section>
+        <div className="test-controls">
+          <button
+            className="button button-outline"
+            disabled={index === 0}
+            onClick={() => setIndex(index - 1)}
+          >
+            <ArrowLeft size={16} /> 이전
+          </button>
+          <button
+            className="button button-primary"
+            disabled={answers[index] === null}
+            onClick={next}
+          >
+            {index === 39 ? '결과 확인하기' : '다음 문항'}{' '}
+            {index === 39 ? <Check size={16} /> : <ArrowRight size={16} />}
+          </button>
         </div>
-        <div
-          className="rating-group"
-          role="group"
-          aria-label="답변 선택, 1점 전혀 아니다부터 7점 매우 그렇다까지"
-        >
-          {labels.map((label, i) => (
-            <button
-              type="button"
-              key={label}
-              className={`rating ${answers[index] === i + 1 ? 'selected' : ''}`}
-              aria-pressed={answers[index] === i + 1}
-              aria-label={`${i + 1}점: ${label}`}
-              onClick={() => choose(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      </section>
-      <div className="test-controls">
-        <button
-          className="button button-plain"
-          disabled={index === 0}
-          onClick={() => setIndex(index - 1)}
-        >
-          <ArrowLeft size={16} /> 이전 문항
-        </button>
-        <button className="button button-dark" disabled={answers[index] === null} onClick={next}>
-          {index === 39 ? '내 결과 확인하기' : '다음 문항'}{' '}
-          {index === 39 ? <Check size={16} /> : <ArrowRight size={16} />}
-        </button>
       </div>
       <p className="test-key-hint">
         <kbd>1–7</kbd> 숫자로 선택 <span aria-hidden="true"> · </span>
-        <kbd>Enter</kbd> 다음 문항 <span aria-hidden="true"> · </span>
-        <kbd>←</kbd> 이전 문항
+        <kbd>Enter</kbd> 다음 문항
       </p>
       <div className="test-bottom">
-        <p>답변은 이 브라우저에만 저장돼요. 정답은 없으니, 편하게 골라주세요.</p>
+        <p>
+          {storageError
+            ? '지금은 답변을 저장할 수 없어요. 창을 닫기 전에 테스트를 완료해주세요.'
+            : '답변은 이 브라우저에만 저장돼요. 정답은 없으니, 편하게 골라주세요.'}
+        </p>
         {!confirmReset ? (
           <button onClick={() => setConfirmReset(true)}>
             <RotateCcw size={10} /> 저장된 답변 지우기

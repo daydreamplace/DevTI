@@ -70,43 +70,68 @@ export function ResultView() {
     <>
       <div className="result-intro">
         <span className="eyebrow">YOUR WORK STYLE</span>
-        <h1>네 가지 성향으로 읽는 나의 개발 스타일.</h1>
+        <h1>나의 개발 스타일</h1>
+        <p className="result-subtitle">네 가지 성향을 같은 비중으로 읽은 결과입니다.</p>
       </div>
       <section className="result-type">
         <div>
-          <span className="eyebrow">네 가지 성향의 조합</span>
-          <h2>{type.name}</h2>
-          <p>{type.tagline}</p>
+          <span className="eyebrow">{result.code.split('').join(' · ')} / 네 가지 성향의 조합</span>
+          <h2>{result.ties.every(Boolean) ? '네 가지 성향이 균형을 이루고 있어요.' : type.name}</h2>
+          <p>
+            {result.ties.every(Boolean)
+              ? '한쪽으로 정해지지 않은 선호도 나의 스타일입니다.'
+              : type.tagline}
+          </p>
         </div>
         <AxisSignature code={type.code} ties={result.ties} />
       </section>
-      <section className="score-panel">
-        <h2>나의 네 가지 성향</h2>
+      <section className="score-panel" aria-labelledby="score-heading">
+        <div className="score-panel-heading">
+          <div>
+            <span className="eyebrow">FOUR EQUAL DIMENSIONS</span>
+            <h2 id="score-heading">나의 선호 분포</h2>
+          </div>
+          <span className="score-scale-note">각 축 10문항 기준</span>
+        </div>
         {axes.map((axis, i) => (
           <div className="score-row" key={axis.name}>
+            <div className="score-row-heading">
+              <h3>{axis.name}</h3>
+              <span className="score-state">
+                {result.ties[i] ? '균형' : `${result.scores[i] > 50 ? axis.left : axis.right} 선호`}
+              </span>
+            </div>
             <div className="score-label">
               <span className={result.scores[i] > 50 ? 'strong' : ''}>
-                {axis.left} {result.scores[i]}%
+                {axis.left} <b>{result.scores[i]}%</b>
               </span>
               <span className={result.scores[i] < 50 ? 'strong' : ''}>
-                {100 - result.scores[i]}% {axis.right}
+                <b>{100 - result.scores[i]}%</b> {axis.right}
               </span>
             </div>
-            <div className="score-bar">
+            <div
+              className="score-bar"
+              role="meter"
+              aria-label={axis.name}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={result.scores[i]}
+              aria-valuetext={`${axis.left} ${result.scores[i]}%, ${axis.right} ${100 - result.scores[i]}%${result.ties[i] ? ', 균형' : ''}`}
+            >
               <span style={{ width: `${result.scores[i]}%` }} />
+              <i className="score-midpoint" aria-hidden="true" />
             </div>
-            <p className="score-caption">
-              {axis.name}
-              {result.ties[i]
-                ? ' · 두 성향이 같은 점수예요. 유형 코드는 왼쪽 성향을 기준으로 표시해요.'
-                : ''}
-            </p>
           </div>
         ))}
+        <p className="score-explanation">
+          비율은 답변을 환산한 선호 점수이며, 능력이나 다른 사람과 비교한 백분위가 아닙니다.
+          {result.ties.some(Boolean) &&
+            ' 균형인 축은 같은 점수이며, 참고용 유형 코드에는 왼쪽 성향을 사용합니다.'}
+        </p>
       </section>
       <div className="detail-grid">
         <section className="detail-panel">
-          <h2>내가 자연스럽게 잘하는 것</h2>
+          <h2>{result.ties.some(Boolean) ? '참고해볼 강점' : '자연스럽게 발휘하는 강점'}</h2>
           <ul>
             {type.strengths.map((s) => (
               <li key={s}>{s}</li>
@@ -122,9 +147,9 @@ export function ResultView() {
         <h2>다음 프로젝트로 해본다면?</h2>
         <p>{type.project}</p>
       </section>
-      <div className="result-actions">
+      <div className="result-actions primary-actions">
         <button onClick={share} className="button button-dark">
-          <Share2 size={15} /> 결과 유형 공유
+          <Share2 size={15} /> 내 유형 공유하기
         </button>
         <button onClick={() => window.print()} className="button button-outline">
           <Download size={15} /> 인쇄 / PDF 저장
