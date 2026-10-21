@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+coverage/
+.DS_Store
+.env*
+!.env.example
+*.tsbuildinfo
+.openai/*.local.*
+.sites-cache/
+tmp/
+*.tar.gz
