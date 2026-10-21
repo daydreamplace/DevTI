@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: ['/og.png'],
   },
 };
-export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#f8f7f3' };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#ffffff' };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

@@ -1,35 +1,74 @@
 'use client';
 import { useState } from 'react';
+import { RotateCcw } from 'lucide-react';
 import { devTypes } from '@/lib/types';
+import { axes } from '@/lib/questions';
 import { TypeCard } from '@/components/type-card';
-const filters = [
-  { label: '전체 유형', code: '' },
-  { label: '탐색형 E', code: 'E' },
-  { label: '구조형 B', code: 'B' },
-];
+
+// Pair complementary combinations so the list does not group by its first letter.
+const displayTypes = devTypes
+  .slice(0, 8)
+  .flatMap((type) => [
+    type,
+    devTypes.find((other) => [...other.code].every((letter, i) => letter !== type.code[i]))!,
+  ]);
+
 export function TypeDirectory() {
-  const [filter, setFilter] = useState('');
-  const types = devTypes.filter((t) => !filter || t.code[0] === filter);
+  const [filters, setFilters] = useState<string[]>(['', '', '', '']);
+  const types = displayTypes.filter((type) =>
+    filters.every((filter, i) => !filter || type.code[i] === filter),
+  );
   return (
     <>
-      <div className="type-filter" role="group" aria-label="유형 필터">
-        {filters.map((f) => (
+      <div className="directory-filters">
+        <div className="filter-heading">
+          <p>관심 있는 성향을 조합해보세요.</p>
           <button
-            key={f.label}
-            className={`filter-button ${filter === f.code ? 'active' : ''}`}
-            aria-pressed={filter === f.code}
-            onClick={() => setFilter(f.code)}
+            className="reset-filters"
+            disabled={filters.every((f) => !f)}
+            onClick={() => setFilters(['', '', '', ''])}
           >
-            {f.label}
+            <RotateCcw size={12} /> 초기화
           </button>
-        ))}
-        <span className="type-count" aria-live="polite">
-          {types.length}가지 유형
+        </div>
+        <div className="filter-axes">
+          {axes.map((axis, i) => (
+            <fieldset key={axis.name}>
+              <legend>{axis.name}</legend>
+              <div>
+                {axis.codes.map((code, j) => (
+                  <button
+                    key={code}
+                    className={`filter-button ${filters[i] === code ? 'active' : ''}`}
+                    aria-pressed={filters[i] === code}
+                    onClick={() =>
+                      setFilters((prev) =>
+                        prev.map((filter, index) =>
+                          index === i ? (filter === code ? '' : code) : filter,
+                        ),
+                      )
+                    }
+                  >
+                    {j === 0 ? axis.left : axis.right} <span>{code}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+        <p className="filter-note">
+          네 가지 축은 동등한 기준입니다. 선택한 조건을 모두 만족하는 조합을 보여드려요.
+        </p>
+      </div>
+      <div className="directory-result-heading">
+        <span>개발 스타일</span>
+        <span className="type-count" role="status">
+          {types.length}가지 조합
         </span>
       </div>
       <div className="directory-grid">
-        {types.map((t) => (
-          <TypeCard key={t.code} type={t} />
+        {types.map((type) => (
+          <TypeCard key={type.code} type={type} />
         ))}
       </div>
     </>

@@ -4,8 +4,6 @@ export type DevType = {
   english: string;
   tagline: string;
   description: string;
-  color: 'mint' | 'peach' | 'lavender' | 'blue';
-  art: number;
   strengths: string[];
   growth: string;
   project: string;
@@ -20,8 +18,6 @@ export const devTypes: DevType[] = [
     tagline: '새로운 시도를, 함께 완성하는 힘.',
     description:
       '새로운 도구를 직접 써보고, 동료의 피드백으로 결과물을 다듬는 스타일입니다. 아이디어를 작은 실험으로 바꾸고 팀과 함께 완성도를 높여갑니다.',
-    color: 'mint',
-    art: 0,
     strengths: [
       '빠르게 시도하고 구체적인 피드백을 구해요.',
       '작은 개선도 놓치지 않고 팀과 나눠요.',
@@ -37,8 +33,6 @@ export const devTypes: DevType[] = [
     tagline: '아이디어가 있다면, 일단 만들어보자.',
     description:
       '새로운 아이디어를 빠르게 구현하고 동료와 다음 가능성을 찾는 스타일입니다. 완성된 정답을 기다리기보다 프로토타입으로 대화를 시작합니다.',
-    color: 'peach',
-    art: 1,
     strengths: [
       '아이디어를 빠르게 눈에 보이는 형태로 만들어요.',
       '다른 사람의 생각을 연결해 새로운 방향을 찾아요.',
@@ -54,8 +48,6 @@ export const devTypes: DevType[] = [
     tagline: '직접 부딪히고, 끝까지 다듬고.',
     description:
       '혼자 새로운 기술을 실험하고 작은 부분까지 개선하는 데 몰입합니다. 손으로 구현하며 배운 내용을 자신만의 결과물에 차곡차곡 쌓습니다.',
-    color: 'blue',
-    art: 3,
     strengths: ['혼자서도 실험과 개선의 흐름을 이어가요.', '직접 발견한 문제를 끝까지 추적해요.'],
     growth: '작업 중간에 진행 상황을 공유하면 혼자 놓친 부분을 발견할 수 있어요.',
     project: '관심 있는 라이브러리로 작은 도구를 만들고 테스트와 사용 설명을 추가해보세요.',
@@ -68,8 +60,6 @@ export const devTypes: DevType[] = [
     tagline: '아직 없는 길도, 만들면서 나아가요.',
     description:
       '스스로 방향을 정하고 낯선 기술과 아이디어를 직접 실험합니다. 익숙한 방식에 머무르기보다 새로운 가능성을 구현하는 과정에서 에너지를 얻습니다.',
-    color: 'peach',
-    art: 1,
     strengths: [
       '낯선 분야에서도 작은 시도를 시작해요.',
       '자신만의 관점으로 문제를 새롭게 정의해요.',
@@ -85,8 +75,6 @@ export const devTypes: DevType[] = [
     tagline: '깊이 이해하고, 함께 더 정확하게.',
     description:
       '여러 접근법을 탐색하며 원리를 이해하고, 동료와 논의하며 답을 다듬습니다. 호기심과 꼼꼼함을 바탕으로 팀의 이해를 연결합니다.',
-    color: 'lavender',
-    art: 2,
     strengths: [
       '서로 다른 관점을 연결해 문제를 이해해요.',
       '근거와 세부사항을 팀에 명확히 전달해요.',
@@ -102,8 +90,6 @@ export const devTypes: DevType[] = [
     tagline: '다른 관점을 연결해, 다음을 그려요.',
     description:
       '새로운 가능성을 넓게 탐색하고 깊이 생각한 뒤, 동료와 큰 방향을 그립니다. 당장의 해결을 넘어 문제 자체를 새롭게 바라보는 스타일입니다.',
-    color: 'lavender',
-    art: 2,
     strengths: [
       '문제의 배경과 앞으로의 가능성을 함께 살펴요.',
       '다양한 아이디어를 하나의 방향으로 연결해요.',
@@ -119,8 +105,6 @@ export const devTypes: DevType[] = [
     tagline: '호기심의 끝에서, 정확한 답을.',
     description:
       '혼자 깊이 몰입해 낯선 문제의 원리를 파악합니다. 다양한 접근을 비교하고 작은 차이까지 확인하며 자신만의 근거를 만듭니다.',
-    color: 'blue',
-    art: 3,
     strengths: ['복잡한 문제를 차분하게 분석해요.', '작은 오류와 예외를 발견하는 데 집중해요.'],
     growth: '완전히 이해하지 못했더라도 현재까지의 가설을 다른 사람에게 설명해보세요.',
     project: '알고리즘이나 모델 두 가지를 비교하고 재현 가능한 실험 기록을 남겨보세요.',
@@ -133,8 +117,6 @@ export const devTypes: DevType[] = [
     tagline: '익숙한 질문에, 낯선 가능성을.',
     description:
       '자율적인 환경에서 문제를 깊이 이해하고 새로운 관점을 찾습니다. 눈앞의 세부보다 전체 맥락과 앞으로 가능한 변화를 탐색합니다.',
-    color: 'mint',
-    art: 0,
     strengths: [
       '기존 가정을 의심하며 새로운 질문을 던져요.',
       '복잡한 정보를 자신만의 관점으로 해석해요.',
@@ -150,8 +132,6 @@ export const devTypes: DevType[] = [
     tagline: '함께 정한 계획을, 확실한 결과로.',
     description:
       '정돈된 계획을 바탕으로 팀과 실행하고 세부 완성도를 챙깁니다. 역할과 절차가 명확할 때 안정적으로 결과를 쌓아가는 스타일입니다.',
-    color: 'blue',
-    art: 3,
     strengths: ['팀의 약속을 실제 결과물로 이어가요.', '일정과 품질을 함께 확인해요.'],
     growth: '계획에 없는 새로운 방법도 작은 범위에서 시험해보세요.',
     project: '팀 프로젝트의 작업 목록을 나누고 테스트와 코드 리뷰를 포함해 출시해보세요.',
@@ -164,8 +144,6 @@ export const devTypes: DevType[] = [
     tagline: '함께 볼 방향, 바로 움직일 계획.',
     description:
       '큰 방향을 구체적인 실행 계획으로 만들고 팀과 추진합니다. 체계적인 과정 안에서 새로운 가능성을 구현하려는 스타일입니다.',
-    color: 'peach',
-    art: 1,
     strengths: [
       '추상적인 목표를 실행 가능한 작업으로 바꿔요.',
       '팀과 우선순위를 맞추며 빠르게 진행해요.',
@@ -181,8 +159,6 @@ export const devTypes: DevType[] = [
     tagline: '한 줄씩 차곡차곡, 완성도를 쌓아요.',
     description:
       '명확한 구조와 작업 순서 안에서 혼자 집중해 구현합니다. 직접 실행하면서 세부를 확인하고 안정적인 결과물을 만드는 데 강점이 있습니다.',
-    color: 'blue',
-    art: 3,
     strengths: ['정해진 목표를 꾸준하게 구현해요.', '반복 점검으로 결과의 정확성을 높여요.'],
     growth: '완성도를 높이기 전 사용자가 정말 필요로 하는 기능인지 확인해보세요.',
     project: 'API 하나를 설계하고 예외 처리, 테스트, 문서까지 완성해보세요.',
@@ -195,8 +171,6 @@ export const devTypes: DevType[] = [
     tagline: '나만의 설계로, 새로운 것을 현실로.',
     description:
       '스스로 세운 체계 안에서 새로운 방향을 빠르게 구현합니다. 큰 그림을 유지하면서도 자신의 판단으로 실행 속도를 만드는 스타일입니다.',
-    color: 'mint',
-    art: 0,
     strengths: [
       '독립적으로 목표와 작업 순서를 정해요.',
       '새로운 기능을 전체 흐름에 맞게 구현해요.',
@@ -212,8 +186,6 @@ export const devTypes: DevType[] = [
     tagline: '깊이 생각한 구조는, 함께 오래 가요.',
     description:
       '충분한 분석을 바탕으로 체계를 설계하고 동료와 세부를 검토합니다. 팀이 함께 이해하고 유지할 수 있는 안정적인 구조를 선호합니다.',
-    color: 'lavender',
-    art: 2,
     strengths: ['문제의 원인을 분석해 구조에 반영해요.', '문서와 논의로 팀의 이해를 맞춰요.'],
     growth: '설계의 불확실한 부분은 작은 구현으로 먼저 확인해보세요.',
     project: '팀 코드의 반복되는 문제를 분석하고 개선 제안서와 작은 리팩터링을 만들어보세요.',
@@ -226,8 +198,6 @@ export const devTypes: DevType[] = [
     tagline: '함께 갈 미래에, 탄탄한 지도를.',
     description:
       '전체 맥락을 깊이 이해하고 팀이 나아갈 방향을 체계적으로 정리합니다. 장기적인 가능성과 함께 일하는 방식을 연결하는 스타일입니다.',
-    color: 'mint',
-    art: 0,
     strengths: ['장기적인 목표를 팀의 계획과 연결해요.', '여러 의견 속에서 일관된 방향을 찾아요.'],
     growth: '먼 미래의 계획과 함께 이번 주에 확인할 가설도 정해보세요.',
     project: '서비스의 다음 개선 방향을 조사하고 팀과 기술 로드맵을 작성해보세요.',
@@ -240,8 +210,6 @@ export const devTypes: DevType[] = [
     tagline: '원리를 이해하면, 디테일이 달라져요.',
     description:
       '혼자 집중해 원인을 분석하고 정밀한 구조와 기준을 세웁니다. 일관성과 정확성을 바탕으로 복잡한 문제를 차분히 해결합니다.',
-    color: 'blue',
-    art: 3,
     strengths: [
       '근거를 정리하고 예외 상황을 꼼꼼히 살펴요.',
       '체계적인 기록으로 문제 해결을 재현해요.',
@@ -257,8 +225,6 @@ export const devTypes: DevType[] = [
     tagline: '복잡한 세상을, 하나의 큰 구조로.',
     description:
       '자율적으로 깊이 생각하며 장기적인 가능성을 체계로 정리합니다. 개별 기능보다 시스템 전체의 연결과 확장 방향에 관심을 가집니다.',
-    color: 'lavender',
-    art: 2,
     strengths: ['복잡한 관계를 큰 구조로 정리해요.', '당장의 요구 너머 확장 가능성을 살펴요.'],
     growth: '설계가 지나치게 커지지 않도록 현재의 사용자 문제부터 구현해보세요.',
     project: '작은 서비스의 확장 시나리오를 그려보고 현재 필요한 구조만 구현해보세요.',

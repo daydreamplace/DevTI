@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import { devTypes, getType } from '@/lib/types';
 import { axes } from '@/lib/questions';
 import { pageMetadata, siteUrl, updatedAt } from '@/lib/site';
-import { Illustration } from '@/components/illustration';
+import { AxisSignature } from '@/components/axis-signature';
 import { TypeCard } from '@/components/type-card';
 import { JsonLd } from '@/components/json-ld';
 
@@ -45,22 +45,17 @@ export default async function TypePage({ params }: { params: Promise<{ code: str
         <ChevronRight size={11} />
         <span>{type.code}</span>
       </nav>
-      <section className={`type-detail-hero ${type.color}`}>
+      <section className="type-detail-hero">
         <div>
-          <span className="type-code">{type.code}</span>
+          <span className="eyebrow">{type.english}</span>
           <h1>{type.name}</h1>
           <p className="tagline">{type.tagline}</p>
           <p className="description">{type.description}</p>
-          <div className="type-tags">
-            {axes.map((a, i) => (
-              <span key={a.name}>{type.code[i] === a.codes[0] ? a.left : a.right}</span>
-            ))}
-          </div>
           <Link href="/test/" className="button button-dark">
             나는 어떤 유형일까요? <ArrowRight size={16} />
           </Link>
         </div>
-        <Illustration kind={type.art} />
+        <AxisSignature code={type.code} />
       </section>
       <div className="detail-grid">
         <section className="detail-panel">
@@ -94,8 +89,8 @@ export default async function TypePage({ params }: { params: Promise<{ code: str
                 `${type.code[i]}는 ${type.code[i] === axis.codes[0] ? axis.left : axis.right}`,
             )
             .join(', ')}
-          을 뜻합니다. 이 유형은 네 가지 축의 선호 조합을 설명하며, 개발 능력이나 성격 전체를
-          판단하지 않습니다.
+          을 뜻합니다. 네 가지 축은 같은 비중의 독립된 기준이며, 첫 글자가 대표 유형이거나 글자
+          순서가 중요도를 뜻하지 않습니다. 이 조합은 개발 능력이나 성격 전체를 판단하지 않습니다.
         </p>
         <p>
           같은 유형이라도 선호의 강도와 실제 경험은 다를 수 있어요. 개인별 점수는 테스트를 완료한

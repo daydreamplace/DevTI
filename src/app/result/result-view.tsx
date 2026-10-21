@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, Share2, Download, RotateCcw } from 'lucide-react';
 import { axes, calculateResult, isAnswers, STORAGE_KEY, TestResult } from '@/lib/questions';
 import { getType } from '@/lib/types';
-import { Illustration } from '@/components/illustration';
+import { AxisSignature } from '@/components/axis-signature';
 
 export function ResultView() {
   const [result, setResult] = useState<TestResult | null>(null);
@@ -69,27 +69,16 @@ export function ResultView() {
   return (
     <>
       <div className="result-intro">
-        <span className="eyebrow">HELLO, THIS IS YOUR DEVELOPER DNA.</span>
-        <h1>당신의 방식에는, 이런 이름이 어울려요.</h1>
+        <span className="eyebrow">YOUR WORK STYLE</span>
+        <h1>네 가지 성향으로 읽는 나의 개발 스타일.</h1>
       </div>
-      <section className={`result-type ${type.color}`}>
+      <section className="result-type">
         <div>
-          <span className="type-code">{type.code}</span>
+          <span className="eyebrow">네 가지 성향의 조합</span>
           <h2>{type.name}</h2>
           <p>{type.tagline}</p>
-          <div className="type-tags">
-            {axes.map((a, i) => (
-              <span key={a.name}>
-                {result.ties[i]
-                  ? `${a.left}·${a.right} 균형`
-                  : result.code[i] === a.codes[0]
-                    ? a.left
-                    : a.right}
-              </span>
-            ))}
-          </div>
         </div>
-        <Illustration kind={type.art} />
+        <AxisSignature code={type.code} ties={result.ties} />
       </section>
       <section className="score-panel">
         <h2>나의 네 가지 성향</h2>

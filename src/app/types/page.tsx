@@ -18,8 +18,9 @@ export default function TypesPage() {
             하나가 아니니까<span className="coral">.</span>
           </h1>
           <p>
-            다른 방식으로 생각하고, 각자의 속도로 만들어요.
-            <br />네 가지 성향이 만나는 16가지 개발 스타일을 만나보세요.
+            한 글자가 아닌, 네 가지 성향을 함께 읽어요.
+            <br />
+            동등한 네 가지 축이 만나는 16가지 조합을 살펴보세요.
           </p>
         </div>
         <TypeDirectory />
