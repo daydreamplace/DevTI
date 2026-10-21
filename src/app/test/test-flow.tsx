@@ -25,6 +25,8 @@ export function TestFlow() {
   const [resumed, setResumed] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [advancing, setAdvancing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -52,32 +54,76 @@ export function TestFlow() {
   }, [answers, ready]);
 
   useEffect(() => {
-    if (ready) heading.current?.focus({ preventScroll: true });
+    if (!ready) return;
+    heading.current?.focus({ preventScroll: true });
+    heading.current?.scrollIntoView({ block: 'nearest', behavior: 'auto' });
   }, [index, ready]);
+
+  const cancelAdvance = useCallback(() => {
+    if (advanceTimer.current !== null) {
+      clearTimeout(advanceTimer.current);
+      advanceTimer.current = null;
+    }
+    setAdvancing(false);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (advanceTimer.current !== null) clearTimeout(advanceTimer.current);
+    },
+    [],
+  );
+
+  const advance = useCallback(
+    (currentIndex: number, currentAnswers: (number | null)[]) => {
+      if (currentAnswers[currentIndex] === null) return;
+      if (currentIndex < questions.length - 1) {
+        setIndex(currentIndex + 1);
+        return;
+      }
+      const missing = currentAnswers.findIndex((answer) => answer === null);
+      if (missing >= 0) {
+        setIndex(missing);
+        return;
+      }
+      // Persist this exact answer set before navigating, including the final answer.
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentAnswers));
+        router.push('/result/');
+      } catch {
+        setStorageError(true);
+        // Fragments stay in the browser and are cleared by the result screen.
+        router.push(`/result/#${currentAnswers.join('')}`);
+      }
+    },
+    [router],
+  );
 
   const choose = useCallback(
     (value: number) => {
-      setAnswers((prev) => prev.map((a, i) => (i === index ? value : a)));
+      cancelAdvance();
+      const updated = answers.map((answer, i) => (i === index ? value : answer));
+      setAnswers(updated);
       setResumed(false);
+      setAdvancing(true);
+      advanceTimer.current = setTimeout(() => {
+        advanceTimer.current = null;
+        setAdvancing(false);
+        advance(index, updated);
+      }, 300);
     },
-    [index],
+    [answers, index, advance, cancelAdvance],
   );
+
   const next = useCallback(() => {
-    if (answers[index] === null) return;
-    if (index < 39) {
-      setIndex(index + 1);
-      return;
-    }
-    const missing = answers.findIndex((a) => a === null);
-    if (missing >= 0) {
-      setIndex(missing);
-      return;
-    }
-    if (storageError) {
-      // Hash is never sent to a server. Keep a result available when localStorage is blocked.
-      router.push(`/result/#${answers.join('')}`);
-    } else router.push('/result/');
-  }, [answers, index, router, storageError]);
+    cancelAdvance();
+    advance(index, answers);
+  }, [answers, index, advance, cancelAdvance]);
+
+  const previous = useCallback(() => {
+    cancelAdvance();
+    setIndex((current) => Math.max(0, current - 1));
+  }, [cancelAdvance]);
 
   useEffect(() => {
     if (!ready || confirmReset) return;
@@ -91,13 +137,14 @@ export function TestFlow() {
         el.tagName === 'TEXTAREA'
       )
         return;
+      if (event.repeat && (/^[1-7]$/.test(event.key) || event.key === 'Enter')) return;
       if (/^[1-7]$/.test(event.key)) {
         event.preventDefault();
         choose(Number(event.key));
       }
       if (event.key === 'ArrowLeft' && index > 0 && !el.closest('.rating-group')) {
         event.preventDefault();
-        setIndex(index - 1);
+        previous();
       }
       if (event.key === 'Enter' && el.tagName !== 'BUTTON' && el.tagName !== 'A') {
         event.preventDefault();
@@ -106,9 +153,10 @@ export function TestFlow() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [choose, index, next, ready, confirmReset]);
+  }, [choose, index, next, previous, ready, confirmReset]);
 
   function reset() {
+    cancelAdvance();
     setAnswers(empty());
     setIndex(0);
     setResumed(false);
@@ -131,7 +179,7 @@ export function TestFlow() {
   return (
     <div className="test-shell">
       <div className="test-topline">
-        <Link href="/" className="text-link">
+        <Link href="/" className="text-link" onClick={cancelAdvance}>
           <ArrowLeft size={13} /> 나중에 이어하기
         </Link>
         <span>
@@ -186,7 +234,7 @@ export function TestFlow() {
           <h1 id="question-title" ref={heading} tabIndex={-1}>
             {q.text}
           </h1>
-          <p className="question-hint">평소의 나와 가장 가까운 답을 선택해주세요.</p>
+          <p className="question-hint">답변을 선택하면 자동으로 다음 문항으로 넘어가요.</p>
           <div className="rating-labels" aria-hidden="true">
             <span>전혀 아니다</span>
             <span>매우 그렇다</span>
@@ -206,6 +254,10 @@ export function TestFlow() {
                   checked={answers[index] === i + 1}
                   aria-label={`${i + 1}점: ${label}`}
                   onChange={() => choose(i + 1)}
+                  onClick={() => {
+                    // Selecting the saved value again should also advance.
+                    if (answers[index] === i + 1) choose(i + 1);
+                  }}
                 />
                 <span aria-hidden="true">{i + 1}</span>
               </label>
@@ -216,21 +268,21 @@ export function TestFlow() {
             role="status"
           >
             {answers[index] === null ? (
-              '답변을 선택하면 다음 문항으로 이동할 수 있어요.'
+              '이전 문항으로 돌아가 답변을 수정할 수 있어요.'
             ) : (
               <>
                 <Check size={13} />
                 {answers[index]}점 · {labels[answers[index]! - 1]}
+                {advancing &&
+                  (index === questions.length - 1
+                    ? ' · 결과를 확인할게요.'
+                    : ' · 다음 문항으로 이동해요.')}
               </>
             )}
           </p>
         </section>
         <div className="test-controls">
-          <button
-            className="button button-outline"
-            disabled={index === 0}
-            onClick={() => setIndex(index - 1)}
-          >
+          <button className="button button-outline" disabled={index === 0} onClick={previous}>
             <ArrowLeft size={16} /> 이전
           </button>
           <button
@@ -244,7 +296,7 @@ export function TestFlow() {
         </div>
       </div>
       <p className="test-key-hint">
-        <kbd>1–7</kbd> 숫자로 선택 <span aria-hidden="true"> · </span>
+        <kbd>1–7</kbd> 선택 후 자동 이동 <span aria-hidden="true"> · </span>
         <kbd>Enter</kbd> 다음 문항
       </p>
       <div className="test-bottom">
@@ -254,7 +306,12 @@ export function TestFlow() {
             : '답변은 이 브라우저에만 저장돼요. 정답은 없으니, 편하게 골라주세요.'}
         </p>
         {!confirmReset ? (
-          <button onClick={() => setConfirmReset(true)}>
+          <button
+            onClick={() => {
+              cancelAdvance();
+              setConfirmReset(true);
+            }}
+          >
             <RotateCcw size={10} /> 저장된 답변 지우기
           </button>
         ) : (
