@@ -357,20 +357,31 @@ summary:focus-visible {
   display: block;
   width: 100%;
   margin: 0;
-  height: 4px;
+  height: 24px;
   appearance: none;
-  background: linear-gradient(90deg, #d2e7b3, #e8ecdf);
+  background: transparent;
   border-radius: 2px;
   cursor: pointer;
 }
 .explorer-axis input::-webkit-slider-thumb {
   appearance: none;
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
   background: #536c38;
   border: 3px solid #fff;
   border-radius: 50%;
   box-shadow: 0 0 0 1px #536c38;
+}
+.explorer-axis input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(90deg, #d2e7b3, #e8ecdf);
+  border-radius: 2px;
+}
+.explorer-axis input::-moz-range-track {
+  height: 4px;
+  background: linear-gradient(90deg, #d2e7b3, #e8ecdf);
+  border-radius: 2px;
 }
 .explorer-axis input::-moz-range-thumb {
   width: 9px;
@@ -1758,7 +1769,7 @@ summary:focus-visible {
     font-size: 10px;
   }
   .explorer-axis input {
-    height: 5px;
+    height: 24px;
   }
   .explorer-axis input::-webkit-slider-thumb {
     width: 16px;
