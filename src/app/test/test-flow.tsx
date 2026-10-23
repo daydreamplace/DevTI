@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Check, RotateCcw } from 'lucide-react';
 import { axes, isAnswers, questions, STORAGE_KEY } from '@/lib/questions';
 
 const empty = () => Array<number | null>(40).fill(null);
@@ -284,14 +284,6 @@ export function TestFlow() {
         <div className="test-controls">
           <button className="button button-outline" disabled={index === 0} onClick={previous}>
             <ArrowLeft size={16} /> 이전
-          </button>
-          <button
-            className="button button-primary"
-            disabled={answers[index] === null}
-            onClick={next}
-          >
-            {index === 39 ? '결과 확인하기' : '다음 문항'}{' '}
-            {index === 39 ? <Check size={16} /> : <ArrowRight size={16} />}
           </button>
         </div>
       </div>
